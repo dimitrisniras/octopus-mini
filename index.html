@@ -1,0 +1,274 @@
+<!doctype html>
+<html class="fixed">
+	<head>
+
+		<!-- Basic -->
+		<meta charset="UTF-8">
+
+		<title>Octopus Editable Table</title>
+		<meta name="keywords" content="HTML5 Admin Template" />
+		<meta name="description" content="Porto Admin - Responsive HTML5 Template">
+		<meta name="author" content="okler.net">
+
+		<!-- Mobile Metas -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+		<!-- Web Fonts  -->
+		<link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
+
+		<!-- Vendor CSS -->
+		<link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.css" />
+		<link rel="stylesheet" href="/vendor/font-awesome/css/font-awesome.css" />
+		<link rel="stylesheet" href="/vendor/magnific-popup/magnific-popup.css" />
+		<link rel="stylesheet" href="/vendor/bootstrap-datepicker/css/datepicker3.css" />
+
+		<!-- Specific Page Vendor CSS -->
+		<link rel="stylesheet" href="/vendor/select2/select2.css" />
+		<link rel="stylesheet" href="/vendor/jquery-datatables-bs3/assets/css/datatables.css" />
+
+		<!-- Theme CSS -->
+		<link rel="stylesheet" href="/stylesheets/theme.css" />
+
+		<!-- Skin CSS -->
+		<link rel="stylesheet" href="/stylesheets/skins/default.css" />
+
+		<!-- Theme Custom CSS -->
+		<link rel="stylesheet" href="/stylesheets/theme-custom.css">
+		<link rel='stylesheet' href='/dist/css/AdminLTE.min.css'>
+
+		<!-- Head Libs -->
+		<script src="/vendor/modernizr/modernizr.js"></script>
+		
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.5/angular.min.js"></script>
+		
+		<script src="https://cdn.jsdelivr.net/npm/vega@4.4.0"></script>
+
+	</head>
+	<body ng-app="mainApp" ng-controller="tableController as tableCtrl">
+		<section class="body">
+		
+			<header class="header">
+				<div class="logo-container">
+					<a style="cursor: pointer;" ng-click="tableCtrl.refreshPage();" class="logo">
+						<img src="/images/logo.png" height="35" alt="Porto Admin" />
+					</a>
+					<div class="visible-xs toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html" data-fire-event="sidebar-left-opened">
+						<i class="fa fa-bars" aria-label="Toggle sidebar"></i>
+					</div>
+				</div>
+			
+				<!-- start: search & user box -->
+				<div class="header-right">
+			
+					<form action="pages-search-results.html" class="search nav-form">
+						<div class="input-group input-search">
+							<input type="text" class="form-control" name="q" id="q" placeholder="Search...">
+							<span class="input-group-btn">
+								<button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
+							</span>
+						</div>
+					</form>
+			
+					<span class="separator"></span>
+				</div>
+				<!-- end: search & user box -->
+			</header>
+
+			<div class="inner-wrapper">
+				<!-- start: sidebar -->
+				<aside id="sidebar-left" class="sidebar-left">
+				
+					<div class="sidebar-header">
+						<div class="sidebar-title" style="color: white">
+							Navigation
+						</div>
+						<div class="sidebar-toggle hidden-xs" data-toggle-class="sidebar-left-collapsed" data-target="html" data-fire-event="sidebar-left-toggle">
+							<i class="fa fa-bars" aria-label="Toggle sidebar"></i>
+						</div>
+					</div>
+				
+					<div class="nano">
+						<div class="nano-content">
+							<nav id="menu" class="nav-main" role="navigation"><br>
+								<ul class="nav nav-main">
+									<li class="nav-parent">
+										<a>
+											<i class="fa fa-file" aria-hidden="true"></i>
+											<span>Datasets</span>
+										</a>
+										<ul class="nav nav-children">
+											<li ng-repeat="dataset in tableCtrl.exampleDatasets">
+												<a style="cursor:pointer;" ng-click="tableCtrl.datasets(dataset.url)"> {{ dataset.name }} </a>
+											</li>
+											<br>
+											<li>
+												<div style="float: left;">
+													&nbsp;
+													<input id="addDataName" style="width: 30%" placeholder=" Name..." type="text" /> &nbsp;
+													<input id="addDataUrl" style="width: 45%" placeholder=" URL" type="url" /> &nbsp; 
+													<button ng-click="tableCtrl.addNewDataset()" style="width: 15%" class="btn btn-default"><i class="fa fa-plus"></i></button>
+												</div>
+											</li>
+										</ul>
+									</li>
+								</ul>
+							</nav>
+						</div>
+					</div>
+				
+				</aside>
+				<!-- end: sidebar -->
+				
+				<section class="content-body">
+					<a id="copyCodeBtn" class="btn btn-danger pull-right" ng-click="tableCtrl.copyCode()">Copy Code <i class="fa fa-copy"></i></a>
+				</section>
+
+				<section role="main" class="content-body">
+					<header class="page-header">
+						<h2>Preview Page</h2>					
+					</header>
+
+					<!-- start: page -->
+					<div ng-if="tableCtrl.isLoading === true" style="position: fixed; top: 50%; left: 53%; margin-top: -50px; margin-left: -30px;">
+    					<img src="http://i49.tinypic.com/j5z8mb.gif" alt="Loading...">
+					</div>
+					<section ng-if="tableCtrl.isLoading === false" class="panel">
+
+						<header class="panel-heading">
+							<div class="panel-actions">
+								<select class="ng-cloak" ng-if="tableCtrl.tables.length !== 0" id="select3" style="width: 175px; height: 40px;" ng-model="selected3" ng-options="table for table in tableCtrl.tables" ng-click="tableCtrl.changeAppearence('table','#datatable-editable',selected3)">
+									<option value="" class="disabled selected">-- Select table --</option>
+								</select>
+								<a href="#" class="fa fa-caret-down"></a>
+								<a href="#" class="fa fa-times"></a>
+							</div>
+							
+							<h2 class="panel-title">Editable Table</h2>
+							
+						</header>
+						<div class="panel-body">
+							<div class="row">
+								<div class="col-sm-6">
+									<div class="mb-md">
+										<button id="addToTable" class="btn btn-primary">Add <i class="fa fa-plus"></i></button> &nbsp;
+										<select class="ng-cloak" ng-if="tableCtrl.buttons.length !== 0" id="select1" ng-model="selected1" ng-options="button for button in tableCtrl.buttons" ng-click="tableCtrl.changeAppearence('button','#addToTable',selected1)">
+											<option value="" class="disabled selected">-- Select button --</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="mb-md pull-right">
+										<select class="ng-cloak" ng-if="tableCtrl.buttons.length !== 0" id="select2" ng-model="selected2" ng-options="button for button in tableCtrl.buttons" ng-click="tableCtrl.changeAppearence('button','#getDataBtn',selected2)">
+											<option value="" class="disabled selected">-- Select button --</option>
+										</select> &nbsp;
+										<a id="getDataBtn" class="btn btn-success" ng-click="tableCtrl.getDatasetInstance()">Get Data <i class="fa fa-download"></i></a>
+									</div>
+								</div>
+							</div>
+							<table class="table table-bordered table-striped mb-none ng-cloak" id="datatable-editable">
+								<thead>
+									<tr>
+										<th ng-repeat="(key, data) in tableCtrl.dataset[0]">{{key}} <span><input type="checkbox" ng-click="tableCtrl.addToVega(key); $event.stopPropagation();"></span></th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="data in tableCtrl.dataset">
+										<td ng-repeat="d in data">{{d}}</td>
+										<td class="actions">
+											<a href="#" class="hidden on-editing save-row"><i class="fa fa-save"></i></a>
+											<a href="#" class="hidden on-editing cancel-row"><i class="fa fa-times"></i></a>
+											<a href="#" class="on-default edit-row"><i class="fa fa-pencil"></i></a>
+											<a href="#" class="on-default remove-row"><i class="fa fa-trash-o"></i></a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</section>
+					<!-- end: page -->
+					
+					<section class="panel ng-cloak" ng-if="tableCtrl.isLoading === false">
+						<header class="panel-heading">
+							<div class="panel-actions">
+								<select class="ng-cloak" id="selectGraph" style="width: 175px; height: 43px;" ng-model="selectedGraph" ng-click="tableCtrl.showGraph(selectedGraph)">
+									<option value="" class="disabled selected">-- Select graph --</option>
+									<option value="lineChart"> Line Chart </option>
+									<option value="barChart"> Bar Chart </option>
+									<option value="stackedBarChart"> Stacked Bar Chart </option>
+									<option value="areaChart"> Area Chart </option>
+									<option value="stackedAreaChart"> Stacked Area Chart </option>
+									<option value="donutChart"> Donut Chart </option>
+									<option value="histogramChart"> Histogram Chart </option>
+									<option value="boxPlotChart"> Box Plot Chart </option>
+									<option value="contourPlotChart"> Contour Plot Chart </option>
+									<option value="scatterPlotChart"> Scatter Plot Chart </option>
+								</select>
+								<a href="#" class="fa fa-caret-down"></a>
+								<a href="#" class="fa fa-times"></a>
+							</div>
+							
+							<h2 class="panel-title">Graphs</h2>
+							
+						</header>
+						
+						<div class="panel-body">
+							<div id="view"></div>
+						</div>
+					</section>
+					
+				</section>
+			</div>
+
+		</section>
+
+		<div id="dialog" class="modal-block mfp-hide">
+			<section class="panel">
+				<header class="panel-heading">
+					<h2 class="panel-title">Are you sure?</h2>
+				</header>
+				<div class="panel-body">
+					<div class="modal-wrapper">
+						<div class="modal-text">
+							<p>Are you sure that you want to delete this row?</p>
+						</div>
+					</div>
+				</div>
+				<footer class="panel-footer">
+					<div class="row">
+						<div class="col-md-12 text-right">
+							<button id="dialogConfirm" class="btn btn-primary">Confirm</button>
+							<button id="dialogCancel" class="btn btn-default">Cancel</button>
+						</div>
+					</div>
+				</footer>
+			</section>
+		</div>
+
+		<!-- Vendor -->
+		<script src="/vendor/jquery/jquery.js"></script>
+		<script src="/vendor/jquery-browser-mobile/jquery.browser.mobile.js"></script>
+		<script src="/vendor/bootstrap/js/bootstrap.js"></script>
+		<script src="/vendor/nanoscroller/nanoscroller.js"></script>
+		<script src="/vendor/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+		<script src="/vendor/magnific-popup/magnific-popup.js"></script>
+		<script src="/vendor/jquery-placeholder/jquery.placeholder.js"></script>
+		
+		<!-- Specific Page Vendor -->
+		<script src="/vendor/select2/select2.js"></script>
+		<script src="/vendor/jquery-datatables/media/js/jquery.dataTables.js"></script>
+		<script src="/vendor/jquery-datatables-bs3/assets/js/datatables.js"></script>
+		
+		<!-- Theme Base, Components and Settings -->
+		<script src="/javascripts/theme.js"></script>
+		
+		<!-- Theme Custom -->
+		<script src="/javascripts/theme.custom.js"></script>
+		
+		<!-- Theme Initialization Files -->
+		<script src="/javascripts/theme.init.js"></script>
+		
+		<script src="/index.js"></script>
+		
+	</body>
+</html>
