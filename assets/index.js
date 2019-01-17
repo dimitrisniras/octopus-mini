@@ -2,7 +2,12 @@ var mainApp = angular.module("mainApp", []);
 
 mainApp.controller('tableController', function($rootScope, $scope, $q, $http) {
 	const ct = this;
-				
+	
+	var username;
+	ct.graphEnabled = false;
+	var graphs = [];
+	var savedGraphs = [];
+	
 	var exampleDatasets = [
 		{
 			name: 'log4j-1.2.17-Class',
@@ -41,6 +46,8 @@ mainApp.controller('tableController', function($rootScope, $scope, $q, $http) {
 		}
 	];
 	var vegaTable = [];
+	var vega_url = 'http://localhost:9000/api/data/';
+	var design_app_url = 'http://localhost:8090/';
 				
 	try {
 		ct.exampleDatasets = JSON.parse(sessionStorage['exampleDatasets']);
@@ -50,10 +57,13 @@ mainApp.controller('tableController', function($rootScope, $scope, $q, $http) {
 	
 	try {
 		ct.decodedUri = JSON.parse(sessionStorage['decodedUri']);
+		username = sessionStorage['username'];
 	} catch {
 		if (window.location.search !== "") {
 			let vars = window.location.href.replace(window.location.origin + '/?', '');
-			ct.decodedUri = JSON.parse(decodeURIComponent(vars));
+			username = vars.split('&')[0];
+			ct.decodedUri = JSON.parse(decodeURIComponent(vars.split('&')[1]));
+			sessionStorage['username'] = username;
 		} else {
 			ct.decodedUri = [];
 		}
@@ -396,6 +406,7 @@ mainApp.controller('tableController', function($rootScope, $scope, $q, $http) {
 				
 	ct.showGraph = function(graph) {
 		var view;
+		ct.graphEnabled = true;
 		
 		function render(spec) {
 		  view = new vega.View(vega.parse(spec))
@@ -439,15 +450,32 @@ mainApp.controller('tableController', function($rootScope, $scope, $q, $http) {
 			
 			$http({
 				method: 'POST',
-				url: 'http://localhost:9000/api/data/' + graph,
+				url: vega_url + graph,
 				data: vegaData
 			}).then(function success(res) {
+				graphs.push({'name': graph, 'src': res.data, 'type': 'Graph'});
 				render(res.data);
 			}, function error(res) {
 				console.log(res);
 			});
 		}
 		
+	};
+	
+	ct.saveTemporary = function() {
+		savedGraphs.push(graphs[graphs.length-1]);
+	};
+	
+	ct.getDesignApp = function() {
+		$http({
+			method: 'POST',
+			url: design_app_url + 'dbactions/',
+			data: savedGraphs
+		}).then(function success(res) {
+			window.open(design_app_url + '?' + username);
+		}, function error(res) {
+			console.log(res);
+		});
 	};
 						
 });

@@ -111,6 +111,13 @@
 											</li>
 										</ul>
 									</li>
+									<hr style="size: 10px">
+									<li>
+										<a style="cursor: pointer;" ng-click="tableCtrl.getDesignApp()"> 
+											<i class="fa fa-pencil" aria-hidden="true"></i>
+											<span> Design your app! </span> 
+										</a>
+									</li>
 								</ul>
 							</nav>
 						</div>
@@ -191,7 +198,7 @@
 					<section class="panel ng-cloak" ng-if="tableCtrl.isLoading === false">
 						<header class="panel-heading">
 							<div class="panel-actions">
-								<select class="ng-cloak" id="selectGraph" style="width: 175px; height: 43px;" ng-model="selectedGraph" ng-click="tableCtrl.showGraph(selectedGraph)">
+								<select class="ng-cloak" id="selectGraph" style="width: 175px; height: 43px;" ng-model="selectedGraph" ng-change="tableCtrl.showGraph(selectedGraph)">
 									<option value="" class="disabled selected">-- Select graph --</option>
 									<option value="lineChart"> Line Chart </option>
 									<option value="barChart"> Bar Chart </option>
@@ -213,6 +220,7 @@
 						</header>
 						
 						<div class="panel-body">
+							<button ng-if="tableCtrl.graphEnabled" class="btn btn-success pull-right" ng-click="tableCtrl.saveTemporary()"> Save temporary </button>
 							<div id="view"></div>
 						</div>
 					</section>
