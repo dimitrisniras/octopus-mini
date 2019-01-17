@@ -464,6 +464,9 @@ mainApp.controller('tableController', function($rootScope, $scope, $q, $http) {
 	
 	ct.saveTemporary = function() {
 		savedGraphs.push(graphs[graphs.length-1]);
+		var x = document.getElementById("toast")
+    	x.className = "show";
+    	setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
 	};
 	
 	ct.getDesignApp = function() {
